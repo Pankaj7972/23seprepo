@@ -1,6 +1,6 @@
 RG = {
   RG1 = {
-    name     = "RESOURCEGRP19"
+    name     = "RESOURCEGRP191"
     location = "eastus"
   }
 }
