@@ -10,7 +10,7 @@ pr:
       - main
 
 variables:
-  workingdirectory: $(Sytem.DefaultWorkingDirectory)   
+  workingdirectory: $(System.DefaultWorkingDirectory)   
   serviceconnection: MYSERVICE
 
 stages:
