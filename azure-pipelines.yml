@@ -30,6 +30,17 @@ stages:
             backendAzureRmContainerName: 'tfstate098container'
             backendAzureRmKey: 'terraform1.tfstate'
 
+        - task: TerraformTask@5
+          inputs:
+            provider: 'azurerm'
+            command: 'validate'
+
+        - task: TerraformTask@5
+          inputs:
+            provider: 'azurerm'
+            command: 'plan'
+            environmentServiceNameAzureRM: 'MYSERVICE'
+
 
   - stage: apply
     displayName: APPLY-STAGE
