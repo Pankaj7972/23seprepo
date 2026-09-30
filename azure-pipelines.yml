@@ -28,7 +28,7 @@ stages:
             backendServiceArm: 'MYSERVICE'
             backendAzureRmStorageAccountName: 'tfstate098'
             backendAzureRmContainerName: 'tfstate098container'
-            backendAzureRmKey: 'terraform.tfstate'
+            backendAzureRmKey: 'terraform1.tfstate'
 
 
   - stage: apply
@@ -44,7 +44,7 @@ stages:
             backendServiceArm: 'MYSERVICE'
             backendAzureRmStorageAccountName: 'tfstate098'
             backendAzureRmContainerName: 'tfstate098container'
-            backendAzureRmKey: 'terraform.tfstate'
+            backendAzureRmKey: 'terraform1.tfstate'
         - task: TerraformTask@5
           inputs:
             provider: 'azurerm'
