@@ -1,0 +1,53 @@
+pool : MYAGENT
+trigger: 
+ branches:
+   include:
+     - main
+
+pr:
+  branches:
+    include:
+      - main
+
+variables:
+  workingdirectory: $(Sytem.DefaultWorkingDirectory)   
+  serviceconnection: MYSERVICE
+
+stages:
+  - stage: validation
+    displayName: VALIDATION-STAGE   
+    jobs:
+      - job: validationjob
+        displayName: VALIDATIONJOB
+        steps:
+        - task: AzureCLI@3
+          displayName: INIT
+          inputs:
+            connectionType: 'azureRM'
+            azureSubscription: 'MYSERVICE'
+            scriptType: 'ps'
+            scriptLocation: 'inlineScript'
+            inlineScript: 'terraform init'
+            workingDirectory: $(Sytem.DefaultWorkingDirectory) 
+            
+
+        - task: AzureCLI@3
+          displayName: FMT
+          inputs:
+            connectionType: 'azureRM'
+            azureSubscription: 'MYSERVICE'
+            scriptType: 'ps'
+            scriptLocation: 'inlineScript'
+            inlineScript: 'terraform fmt -check' 
+            workingDirectory: $(Sytem.DefaultWorkingDirectory) 
+         
+
+        - task: AzureCLI@3
+          displayName: VALIDATE
+          inputs:
+            connectionType: 'azureRM'
+            azureSubscription: 'MYSERVICE'
+            scriptType: 'ps'
+            scriptLocation: 'inlineScript'
+            inlineScript: 'terraform validate'
+          
