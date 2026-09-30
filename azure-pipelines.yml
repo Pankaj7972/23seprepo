@@ -50,4 +50,5 @@ stages:
             scriptType: 'ps'
             scriptLocation: 'inlineScript'
             inlineScript: 'terraform validate'
+            workingDirectory: $(Sytem.DefaultWorkingDirectory) 
           
