@@ -20,35 +20,39 @@ stages:
       - job: validationjob
         displayName: VALIDATIONJOB
         steps:
-        - task: AzureCLI@3
-          displayName: INIT
+        
+        - task: TerraformTask@5
           inputs:
-            connectionType: 'azureRM'
-            azureSubscription: 'MYSERVICE'
-            scriptType: 'ps'
-            scriptLocation: 'inlineScript'
-            inlineScript: 'terraform init'
-            workingDirectory: $(Sytem.DefaultWorkingDirectory) 
-            
+            provider: 'azurerm'
+            command: 'init'
+            backendServiceArm: 'MYSERVICE'
+            backendAzureRmStorageAccountName: 'tfstate098'
+            backendAzureRmContainerName: 'tfstate098container'
+            backendAzureRmKey: 'terraform.tfstate'
 
-        - task: AzureCLI@3
-          displayName: FMT
+
+  - stage: apply
+    displayName: APPLY-STAGE
+    jobs:
+      - job: apply
+        displayName: APPLY-JOB
+        steps:
+        - task: TerraformTask@5
           inputs:
-            connectionType: 'azureRM'
-            azureSubscription: 'MYSERVICE'
-            scriptType: 'ps'
-            scriptLocation: 'inlineScript'
-            inlineScript: 'terraform fmt -check' 
-            workingDirectory: $(Sytem.DefaultWorkingDirectory) 
+            provider: 'azurerm'
+            command: 'init'
+            backendServiceArm: 'MYSERVICE'
+            backendAzureRmStorageAccountName: 'tfstate098'
+            backendAzureRmContainerName: 'tfstate098container'
+            backendAzureRmKey: 'terraform.tfstate'
+        - task: TerraformTask@5
+          inputs:
+            provider: 'azurerm'
+            command: 'apply'
+            environmentServiceNameAzureRM: 'MYSERVICE'
+
+
+        
          
 
-        - task: AzureCLI@3
-          displayName: VALIDATE
-          inputs:
-            connectionType: 'azureRM'
-            azureSubscription: 'MYSERVICE'
-            scriptType: 'ps'
-            scriptLocation: 'inlineScript'
-            inlineScript: 'terraform validate'
-            workingDirectory: $(Sytem.DefaultWorkingDirectory) 
           
