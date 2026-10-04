@@ -59,7 +59,7 @@ stages:
 
   - stage: applystage
     dependsOn: manualapproval
-    condition: succeded()
+    condition: succeeded()
     jobs:
       - job: 
         steps:
