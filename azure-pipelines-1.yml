@@ -1,0 +1,81 @@
+trigger:
+  branches:
+    include:
+      - main
+      - feature
+
+pool: MYAGENT
+
+stages:
+  - stage: validatestage
+    displayName: validation stage
+    jobs:
+      - job: validatejob
+        displayName: validate job
+        steps:
+        - task: TerraformTask@5
+          inputs:
+            provider: 'azurerm'
+            command: 'init'
+            backendServiceArm: 'MYSERVICE'
+            backendAzureRmStorageAccountName: 'tfstate098'
+            backendAzureRmContainerName: 'tfstate098container'
+            backendAzureRmKey: 'terraform.tfstate'
+
+        - task: TerraformTask@5
+          inputs:
+            provider: 'azurerm'
+            command: 'validate'
+  - stage: planstage
+    displayName: plan stage
+    jobs:
+      - job: planjob
+        displayName:  plam job
+        steps:
+        - task: TerraformTask@5
+          inputs:
+            provider: 'azurerm'
+            command: 'init'
+            backendServiceArm: 'MYSERVICE'
+            backendAzureRmStorageAccountName: 'tfstate098'
+            backendAzureRmContainerName: 'tfstate098container'
+            backendAzureRmKey: "terraform.tfstate"
+
+        - task: TerraformTask@5
+          inputs:
+            provider: 'azurerm'
+            command: 'plan'
+            environmentServiceNameAzureRM: 'MYSERVICE'
+
+  - stage: manualapproval
+    pool: server
+    jobs:
+      - job: approvaljob
+        steps:
+        - task: ManualValidation@1
+          inputs:
+            notifyUsers: 'abc@rakutem.com'
+            instructions: 'please approve'
+
+  - stage: applystage
+    dependsOn: manualapproval
+    condition: succeded()
+    jobs:
+      - job: 
+        steps:
+        - task: TerraformTask@5
+          inputs:
+            provider: 'azurerm'
+            command: 'init'
+            backendServiceArm: 'MYSERVICE'
+            backendAzureRmStorageAccountName: 'tfstate098'
+            backendAzureRmContainerName: 'tfstate098container'
+            backendAzureRmKey: "terraform.tfstate"
+
+        - task: TerraformTask@5
+          inputs:
+            provider: 'azurerm'
+            command: 'apply'
+            commandOptions: '-auto-approve'
+            environmentServiceNameAzureRM: 'MYSERVICE'
+                 
