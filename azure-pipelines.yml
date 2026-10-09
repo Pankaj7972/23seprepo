@@ -1,33 +1,22 @@
-pool : MYAGENT
-trigger: 
- branches:
-   include:
-     - main
-
-pr:
-  branches:
-    include:
-      - main
+pool : 
+ name: MYAGENT
 
 variables:
-  workingdirectory: $(System.DefaultWorkingDirectory)   
-  serviceconnection: MYSERVICE
 
 stages:
-  - stage: validation
-    displayName: VALIDATION-STAGE   
+  - stage: validatestage
+    displayName: VALIDATE STAGE
     jobs:
-      - job: validationjob
-        displayName: VALIDATIONJOB
+      - job: validatejob
+        displayName: VALIDATE-JOB
         steps:
-        
         - task: TerraformTask@5
           inputs:
             provider: 'azurerm'
             command: 'init'
-            backendServiceArm: 'MYSERVICE'
-            backendAzureRmStorageAccountName: 'tfstate098'
-            backendAzureRmContainerName: 'tfstate098container'
+            backendServiceArm: 'MY-SERVICE'
+            backendAzureRmStorageAccountName: 'rewalsar'
+            backendAzureRmContainerName: 'koot'
             backendAzureRmKey: 'terraform1.tfstate'
 
         - task: TerraformTask@5
@@ -35,35 +24,57 @@ stages:
             provider: 'azurerm'
             command: 'validate'
 
+  - stage: plan-stage 
+    displayName: PLAN-STAGE
+    jobs:
+      - job: plan-job
+        displayName: PLAN-JOB 
+        steps:
+
+        - task: TerraformTask@5
+          inputs:
+            provider: 'azurerm'
+            command: 'init'
+            backendServiceArm: 'MY-SERVICE'
+            backendAzureRmStorageAccountName: 'rewalsar'
+            backendAzureRmContainerName: 'koot'
+            backendAzureRmKey: 'terraform1.tfstate'
         - task: TerraformTask@5
           inputs:
             provider: 'azurerm'
             command: 'plan'
-            environmentServiceNameAzureRM: 'MYSERVICE'
+            environmentServiceNameAzureRM: 'MY-SERVICE'
 
-
-  - stage: apply
-    displayName: APPLY-STAGE
+  - stage: manual=approval
     jobs:
-      - job: apply
-        displayName: APPLY-JOB
+      - job: manual-approval
+        steps:
+        - task: ManualValidation@1
+          inputs:
+            notifyUsers: 'abc@rakutem.com'
+
+  - stage: terraform-apply 
+    displayName: APPLY-STAGE
+    dependsOn: manual=approval
+    condition: succeeded()
+    jobs:
+      - job: applyjob
+        displayName: APPLY-JOB 
         steps:
         - task: TerraformTask@5
           inputs:
             provider: 'azurerm'
             command: 'init'
-            backendServiceArm: 'MYSERVICE'
-            backendAzureRmStorageAccountName: 'tfstate098'
-            backendAzureRmContainerName: 'tfstate098container'
+            backendServiceArm: 'MY-SERVICE'
+            backendAzureRmStorageAccountName: 'rewalsar'
+            backendAzureRmContainerName: 'koot'
             backendAzureRmKey: 'terraform1.tfstate'
+
         - task: TerraformTask@5
           inputs:
             provider: 'azurerm'
             command: 'apply'
-            environmentServiceNameAzureRM: 'MYSERVICE'
-
-
+            commandOptions: '-auto-approve'
+            environmentServiceNameAzureRM: 'MY-SERVICE'
+               
         
-         
-
-          
