@@ -1,9 +1,31 @@
 pool : 
  name: MYAGENT
 
+ 
+
 
 
 stages:
+
+  - stage: tflintstage
+    dependsOn: []
+    jobs:
+      - job: 
+        steps:
+        - task: PowerShell@2
+          inputs:
+            targetType: 'inline'
+            script: 'tflint --recursive'
+
+  - stage: tfsec 
+    dependsOn: []
+    jobs:
+      - job: 
+        steps:
+        - task: PowerShell@2
+          inputs:
+            targetType: 'inline'
+            script: 'tfsec .'
   - stage: validatestage
     displayName: VALIDATESTAGE
     jobs:
