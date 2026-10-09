@@ -1,4 +1,4 @@
 variable "RG" {
-type  = string
+
   
 }
