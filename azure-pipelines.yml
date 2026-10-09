@@ -1,14 +1,14 @@
 pool : 
  name: MYAGENT
 
-variables:
+
 
 stages:
   - stage: validatestage
-    displayName: VALIDATE STAGE
+    displayName: VALIDATESTAGE
     jobs:
       - job: validatejob
-        displayName: VALIDATE-JOB
+        displayName: VALIDATEJOB
         steps:
         - task: TerraformTask@5
           inputs:
@@ -24,11 +24,11 @@ stages:
             provider: 'azurerm'
             command: 'validate'
 
-  - stage: plan-stage 
-    displayName: PLAN-STAGE
+  - stage: planstage 
+    displayName: PLANSTAGE
     jobs:
-      - job: plan-job
-        displayName: PLAN-JOB 
+      - job: planjob
+        displayName: PLANJOB 
         steps:
 
         - task: TerraformTask@5
@@ -45,17 +45,18 @@ stages:
             command: 'plan'
             environmentServiceNameAzureRM: 'MY-SERVICE'
 
-  - stage: manual=approval
+  - stage: manualapproval
     jobs:
-      - job: manual-approval
+      - job: approvaljob
+        pool: server
         steps:
         - task: ManualValidation@1
           inputs:
-            notifyUsers: 'abc@rakutem.com'
+            notifyUsers: 'abc'
 
-  - stage: terraform-apply 
+  - stage: terraformapply 
     displayName: APPLY-STAGE
-    dependsOn: manual=approval
+    dependsOn: manualapproval
     condition: succeeded()
     jobs:
       - job: applyjob
