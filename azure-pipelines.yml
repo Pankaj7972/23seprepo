@@ -2,28 +2,27 @@ pool :
  name: MYAGENT
 
 parameters:
-  - name: Environment
-    displayName: Environment
-    type: string
-    default:
-    values:
-      - DEV
-      - PROD
+
 
  
   - name: tflintparameter
     displayName: tflint-to use?
     type: boolean
-    default:
-    values:
-      - 
-      - PROD
+    default: false
+
+  - name: tfsecparameter
+    displayName: tflsec-to use?
+    type: boolean
+    default: false  
+   
+      
 
 
 stages:
 
   - stage: tflintstage
     dependsOn: []
+    condition: ${{eq(parameters.tflintparameter,true)}}
     jobs:
       - job: 
         steps:
@@ -34,6 +33,7 @@ stages:
 
   - stage: tfsec 
     dependsOn: []
+    condition: ${{eq(parameters.tfsecparameter,true)}}
     jobs:
       - job: 
         steps:
