@@ -2,13 +2,7 @@ pool :
  name: MYAGENT
 
 parameters:
-  - name: Environment
-    displayName: Environment
-    type: string
-    default: DEV
-    values:
-      - DEV
-      - PROD
+
 
  
   - name: tflintparameter
