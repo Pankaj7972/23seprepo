@@ -1,8 +1,23 @@
 pool : 
  name: MYAGENT
 
- 
+parameters:
+  - name: Environment
+    displayName: Environment
+    type: string
+    default:
+    values:
+      - DEV
+      - PROD
 
+ 
+  - name: tflintparameter
+    displayName: tflint-to use?
+    type: boolean
+    default:
+    values:
+      - 
+      - PROD
 
 
 stages:
