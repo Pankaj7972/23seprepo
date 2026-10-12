@@ -49,9 +49,9 @@ stages:
             script: 'tfsec .'
         
 
-  - stage: validate-stage
+  - stage: validatestage
     jobs:
-      - job: validate-job
+      - job: validatejob
         steps:
         - task: TerraformTask@5
           inputs:
@@ -94,10 +94,9 @@ stages:
     jobs:
       - job: manualapproval
         steps:
-        - task: PowerShell@2
+        - task: ManualIntervention@8
           inputs:
-            targetType: 'inline'
-            script: 'abc@ararakk.com'
+            instructions: 'abc@fkflkg.'
 
   - stage: applystage  
     displayName: applystage 
