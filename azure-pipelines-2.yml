@@ -1,0 +1,123 @@
+pool:
+  name: MYAGENT
+
+trigger:
+  branches:
+    include:
+      - main 
+
+parameters:
+  - name: Environment
+    displayName: Which Environment
+    type: string
+    default: Dev
+    values:
+      - Dev
+      - Prod
+
+  - name: tfsec
+    displayName: Tfsec?
+    type: boolean
+    default: false          
+  
+  - name: tflint
+    displayName: Tflint?
+    type: boolean
+    default: false    
+
+  - name: validate
+    displayName: Validate
+    type: boolean
+    default: false  
+
+  - name: apply
+    displayName: apply
+    type: boolean
+    default: false 
+
+stages:
+
+  - stage: tfsec
+    dependsOn: []
+    condition: ${{eq(parameters.tfsec,true)}}
+    jobs:
+      - job: tfsec
+        steps:
+        - task: PowerShell@2
+          inputs:
+            targetType: 'inline'
+            script: 'tfsec .'
+        
+
+  - stage: validate-stage
+    jobs:
+      - job: validate-job
+        steps:
+        - task: TerraformTask@5
+          inputs:
+            provider: 'azurerm'
+            command: 'init'
+            backendServiceArm: 'MY-SERVICE'
+            backendAzureRmStorageAccountName: 'rewalsar'
+            backendAzureRmContainerName: 'koot'
+            backendAzureRmKey: 'terraform.tfstate'
+
+        - task: TerraformTask@5
+          inputs:
+            provider: 'azurerm'
+            command: 'validate'
+
+  - stage: plansttage
+    displayName: plan-stage 
+    jobs:
+      - job: planjob
+        displayName: plan-job
+        steps:
+        - task: TerraformTask@5
+          inputs:
+            provider: 'azurerm'
+            command: 'init'
+            backendServiceArm: 'MY-SERVICE'
+            backendAzureRmStorageAccountName: 'rewalsar'
+            backendAzureRmContainerName: 'koot'
+            backendAzureRmKey: 'terraform.tfstate'
+
+        - task: TerraformTask@5
+          inputs:
+            provider: 'azurerm'
+            command: 'plan'
+            environmentServiceNameAzureRM: 'MY-SERVICE'
+
+  - stage: manualapproval
+    displayName: manual-approval
+    pool: server
+    jobs:
+      - job: manualapproval
+        steps:
+        - task: PowerShell@2
+          inputs:
+            targetType: 'inline'
+            script: 'abc@ararakk.com'
+
+  - stage: applystage  
+    displayName: applystage 
+    dependsOn:      manualapproval
+    condition: succeeded()
+    jobs:
+      - job: applyjob
+        displayName: applyjob
+        steps:
+        - task: TerraformTask@5
+          inputs:
+            provider: 'azurerm'
+            command: 'init'
+            backendServiceArm: 'MY-SERVICE'
+            backendAzureRmStorageAccountName: 'rewalsar'
+            backendAzureRmContainerName: 'koot'
+            backendAzureRmKey: 'terraform.tfstate'
+
+        - task: TerraformTask@5
+          inputs:
+            provider: 'azurerm'
+            command: 'apply'
+            environmentServiceNameAzureRM: 'MY-SERVICE'
