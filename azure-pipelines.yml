@@ -18,8 +18,8 @@ parameters:
       - QA 
       - PROD   
 
-  - name: tfsec 
-    displayName: TFSEC 
+  - name: tfsec
+    displayName: TFSEC
     type: boolean
     default: false  
 
@@ -34,7 +34,7 @@ parameters:
     default: false 
 
 stages:
-  - stage: tfsec
+  - stage: tfsecstage
     condition: ${{ eq(parameters.tfsec,true)}}
     displayName: TFSEC-STAGE 
     jobs:
@@ -48,7 +48,7 @@ stages:
 
   - stage: terraformvalidate 
     dependsOn: 
-      - tfsec
+      - tfsecstage
     condition: and(${{ eq(parameters.validate,true)}}, succeeded())  
     displayName: validate-job
     jobs:
