@@ -47,10 +47,10 @@ stages:
   - stage: terraformvalidate 
     dependsOn: 
       - tfsec
-    condition: and(${{eq(parameters.validate,true)}}, succeeded())  
+    condition: and(${{ eq(parameters.validate,true)}}, succeeded())  
     displayName: validate-job
     jobs:
-      - job: validate-job
+      - job: validatejob
         displayName: validate-job
         steps:
         - task: TerraformTask@5
@@ -69,10 +69,10 @@ stages:
 
   - stage: planstage 
     dependsOn: terraformvalidate
-    condition: and(${{eq(parameters.validate,true)}},succeded())
+    condition: and(${{ eq(parameters.validate,true)}},succeeded())
     displayName: PLAN-STAGE 
     jobs:
-      - job: 
+      - job: planjob
         displayName: plan-job 
         steps:
         - task: TerraformTask@5
@@ -92,10 +92,10 @@ stages:
 
   - stage: applystage 
     dependsOn: planstage
-    condition: and({{eq(parameters.apply,true)}},succeeded())
+    condition: and(${{ eq(parameters.apply, true) }}, succeeded())
     displayName: APPLY-STAGE 
     jobs:
-      - job: apply-job 
+      - job: applyjob 
         displayName: apply-job 
         steps:
         - task: TerraformTask@5
